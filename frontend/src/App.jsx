@@ -41,7 +41,7 @@ export default function App() {
 
   return (
     <div style={{ padding: "2rem", fontFamily: "Arial" }}>
-      <h1>📝 To-Do List with Jenkins piline </h1>
+      <h1>📝 To-Do List app </h1>
       <input
         type="text"
         value={text}
