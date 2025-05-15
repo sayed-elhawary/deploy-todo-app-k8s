@@ -41,7 +41,7 @@ export default function App() {
 
   return (
     <div style={{ padding: "2rem", fontFamily: "Arial" }}>
-      <h1>📝 To-Do List app 2nd </h1>
+      <h1>📝 To-Do List application lb aws </h1>
       <input
         type="text"
         value={text}
