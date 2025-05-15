@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://35.91.91.165:3000";
 
 export default function App() {
   const [todos, setTodos] = useState([]);

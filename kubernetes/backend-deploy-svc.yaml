@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: todo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: sayedkhaledelhawary/todo-app-back-2 
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-secret
+          env:
+            - name: PORT
+              value: "3000"
+            - name: MONGO_URI
+              value: "mongodb://root:example@mongo:27017/tododb?authSource=admin"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: todo-app
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 3000          # البورت اللي الخدمة تعرضه داخل الكلاستر (ClusterIP)
+      targetPort: 3000    # البورت اللي البود يستمع عليه
+      protocol: TCP
+  type: ClusterIP         # النوع الافتراضي، يعني الخدمة متاحة داخل الكلاستر فقط
+
