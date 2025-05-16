@@ -12,6 +12,10 @@ spec:
     metadata:
       labels:
         app: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9100"
+        prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: backend
@@ -19,8 +23,8 @@ spec:
           ports:
             - containerPort: 3000
               name: http
-            - containerPort: 9100    # لازم تبقي البورت الي ال backend بيطلع عليه الميتريكس (ممكن تستخدم port مختلف)
-              name: metrics          # اسم البورت مهم لـ prometheus
+            - containerPort: 9100
+              name: metrics
           readinessProbe:
             httpGet:
               path: /
@@ -33,6 +37,7 @@ spec:
               port: 3000
             initialDelaySeconds: 15
             periodSeconds: 20
+
 
 ---
 apiVersion: v1
