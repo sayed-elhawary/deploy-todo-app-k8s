@@ -4,7 +4,7 @@ metadata:
   name: backend
   namespace: todo-app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -12,31 +12,23 @@ spec:
     metadata:
       labels:
         app: backend
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9100"
-        prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: backend
           image: sayedkhaledelhawary/todo-app-back-2
           ports:
             - containerPort: 3000
-              name: http
-            - containerPort: 9100
-              name: metrics
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 3000
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 3000
-            initialDelaySeconds: 15
-            periodSeconds: 20
+          envFrom:
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-secret
+          env:
+            - name: PORT
+              value: "3000"
+            - name: MONGO_URI
+              value: "mongodb://root:example@mongo:27017/tododb?authSource=admin"
+
 
 
 ---
@@ -51,13 +43,8 @@ spec:
   selector:
     app: backend
   ports:
-    - name: http
-      port: 3000
+    - port: 3000
       targetPort: 3000
-      protocol: TCP
-    - name: metrics
-      port: 9100
-      targetPort: 9100
       protocol: TCP
   type: ClusterIP
 
