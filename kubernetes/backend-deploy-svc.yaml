@@ -46,7 +46,13 @@ spec:
   selector:
     app: backend
   ports:
-    - port: 3000
+    - name: http
+      port: 3000
       targetPort: 3000
       protocol: TCP
+    - name: metrics
+      port: 9100
+      targetPort: 9100
+      protocol: TCP
   type: ClusterIP
+
