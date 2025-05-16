@@ -4,10 +4,15 @@ metadata:
   name: backend
   namespace: todo-app
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -15,31 +20,40 @@ spec:
     spec:
       containers:
         - name: backend
-          image: sayedkhaledelhawary/todo-app-back-2 
+          image: sayedkhaledelhawary/todo-app-back-2
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           envFrom:
             - configMapRef:
                 name: backend-config
-            - secretRef:
-                name: backend-secret
-          env:
-            - name: PORT
-              value: "3000"
-            - name: MONGO_URI
-              value: "mongodb://root:example@mongo:27017/tododb?authSource=admin"
+          readinessProbe:
+            httpGet:
+              path: /todos
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /todos
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          # إضافة منفذ metrics ليتمكن Prometheus من سحب الميتريكس (لو أضفت مكتبة metrics في الباك اند)
+          # - containerPort: 9100  (مثال لو في بوابة ميتريكس)
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: backend
   namespace: todo-app
+  labels:
+    app: backend
 spec:
   selector:
     app: backend
   ports:
-    - port: 3000          # البورت اللي الخدمة تعرضه داخل الكلاستر (ClusterIP)
-      targetPort: 3000    # البورت اللي البود يستمع عليه
+    - port: 3000
+      targetPort: 3000
       protocol: TCP
-  type: ClusterIP         # النوع الافتراضي، يعني الخدمة متاحة داخل الكلاستر فقط
-
+  type: ClusterIP
