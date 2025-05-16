@@ -3,12 +3,6 @@ kind: Deployment
 metadata:
   name: frontend
   namespace: todo-app
-  labels:
-    app: frontend
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/path: "/metrics"
-    prometheus.io/port: "80"
 spec:
   replicas: 5
   selector:
@@ -23,15 +17,11 @@ spec:
     metadata:
       labels:
         app: frontend
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"
-        prometheus.io/port: "80"
     spec:
       containers:
         - name: frontend
           image: sayedkhaledelhawary/my-frontend-3
-          imagePullPolicy: Always
+          imagePullPolicy: Always    # يجبر البود على سحب الصورة دائمًا من الريجيستري
           ports:
             - containerPort: 80
           envFrom:
@@ -55,10 +45,6 @@ kind: Service
 metadata:
   name: frontend
   namespace: todo-app
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/path: "/metrics"
-    prometheus.io/port: "80"
 spec:
   selector:
     app: frontend
